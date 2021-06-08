@@ -29,3 +29,8 @@ export const authenticateUser = async (data) => {
     const res = await axios.post('http://localhost:5000/authenticate', data)
     return res
 }
+
+export const resetPassword = async (userId, data) => {
+    const res = await axios.put(`http://localhost:5000/password/${userId}`, data)
+    return res
+}
