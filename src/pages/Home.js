@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getUserList, deleteUser, createUser } from '../services'
-import { Grid, Paper, Button, TextField, Card, CardActionArea, Snackbar, Typography, CardContent, CardActions, IconButton } from '@material-ui/core'
+import { Grid, Modal, Button, TextField, Card, CardActionArea, Snackbar, Typography, CardContent, CardActions, IconButton } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete';
 import MuiAlert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { Controller } from "react-hook-form";
-
+import FormContainer from '../components/FormContainer'
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1
@@ -17,7 +17,20 @@ const useStyles = makeStyles((theme) => ({
     },
     card: {
         margin: theme.spacing(2),
-    }
+
+    },
+    header: {
+        textAlign: 'center',
+
+    },
+    textField: {
+        margin: theme.spacing(2),
+    },
+    form: {
+        display: 'flex',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+    },
 }))
 
 const schema = yup.object().shape({
@@ -34,6 +47,7 @@ const Home = () => {
     const [userList, setUserList] = useState([])
     const [apiError, setError] = useState('')
     const [open, setOpen] = useState(false)
+    const [openModal, setOpenModal] = useState(false)
     const classes = useStyles()
     const { handleSubmit, control, reset, formState: { errors } } = useForm({
         resolver: yupResolver(schema)
@@ -68,6 +82,7 @@ const Home = () => {
             reset(user)
             const users = await getUserList()
             setUserList(users)
+            setOpenModal(false)
         } catch (error) {
             setOpen(true)
             setError('Sorry! Something went wrong. Please check your information and try again')
@@ -81,55 +96,66 @@ const Home = () => {
 
     return (
         <div className={classes.root}>
-            <Paper>
+            <Button variant='contained' onClick={() => setOpenModal(true)}>
+                Create User
+          </Button>
 
-                <form onSubmit={handleSubmit(onSave)}>
-                    <Controller
-                        render={({ field }) => <TextField {...field} variant='outlined' placeholder='first name' helperText={errors?.firstName?.message} />}
-                        name="firstName"
-                        control={control}
-                        defaultValue=''
-                    />
+            <Modal open={openModal} onClose={() => setOpenModal(false)}>
 
-                    <Controller
-                        render={({ field }) => <TextField {...field} variant='outlined' placeholder='last name' helperText={errors?.lastName?.message} />}
-                        name="lastName"
-                        control={control}
-                        defaultValue=''
-                    />
-                    <Controller
-                        render={({ field }) => <TextField {...field} variant='outlined' placeholder='username' helperText={errors?.username?.message} />}
-                        name="username"
-                        control={control}
-                        defaultValue=''
-                    />
-                    <Controller
-                        render={({ field }) => <TextField {...field} variant='outlined' placeholder='password' helperText={errors?.password?.message} />}
-                        name="password"
-                        control={control}
-                        defaultValue=''
-                    />
-                    <Controller
-                        render={({ field }) => <TextField {...field} variant='outlined' placeholder='email' helperText={errors?.email?.message} />}
-                        name="email"
-                        control={control}
-                        defaultValue=''
-                    />
-                    <Controller
-                        render={({ field }) => <TextField {...field} variant='outlined' placeholder='favColor' helperText={errors?.favColor?.message} />}
-                        name="favColor"
-                        control={control}
-                        defaultValue=''
-                    />
-                    <Controller
-                        render={({ field }) => <TextField {...field} variant='outlined' placeholder='birthYear' helperText={errors?.birthYear?.message} />}
-                        name="birthYear"
-                        control={control}
-                        defaultValue=''
-                    />
-                    <Button color='secondary' type='submit' variant='contained'>Save</Button>
-                </form>
-            </Paper>
+                <FormContainer>
+                    <>
+                        <Typography variant='h4' color="textSecondary" className={classes.header}> Create user</Typography>
+                        <form onSubmit={handleSubmit(onSave)} className={classes.form}>
+
+                            <Controller
+                                render={({ field: { onChange, value } }) => <TextField value={value} onChange={onChange} variant='outlined' className={classes.textField} placeholder='first name' helperText={errors?.firstName?.message} label='first name' InputLabelProps={{ shrink: true, }} />}
+                                name="firstName"
+                                control={control}
+                                defaultValue=''
+                            />
+
+                            <Controller
+                                render={({ field: { onChange, value } }) => <TextField value={value} onChange={onChange} variant='outlined' className={classes.textField} placeholder='last name' helperText={errors?.lastName?.message} label='last name' InputLabelProps={{ shrink: true, }} />}
+                                name="lastName"
+                                control={control}
+                                defaultValue=''
+                            />
+                            <Controller
+                                render={({ field: { onChange, value } }) => <TextField value={value} onChange={onChange} variant='outlined' className={classes.textField} placeholder='username' helperText={errors?.username?.message} label='username' InputLabelProps={{ shrink: true, }} />}
+                                name="username"
+                                control={control}
+                                defaultValue=''
+                            />
+                            <Controller
+                                render={({ field: { onChange, value } }) => <TextField value={value} onChange={onChange} variant='outlined' className={classes.textField} placeholder='password' helperText={errors?.password?.message} label='password' InputLabelProps={{ shrink: true, }} />}
+                                name="password"
+                                control={control}
+                                defaultValue=''
+                            />
+                            <Controller
+                                render={({ field: { onChange, value } }) => <TextField value={value} onChange={onChange} variant='outlined' className={classes.textField} placeholder='email' helperText={errors?.email?.message} label='email' InputLabelProps={{ shrink: true, }} />}
+                                name="email"
+                                control={control}
+                                defaultValue=''
+                            />
+                            <Controller
+                                render={({ field: { onChange, value } }) => <TextField value={value} onChange={onChange} variant='outlined' className={classes.textField} placeholder='favColor' helperText={errors?.favColor?.message} label='favorite color' InputLabelProps={{ shrink: true, }} />}
+                                name="favColor"
+                                control={control}
+                                defaultValue=''
+                            />
+                            <Controller
+                                render={({ field: { onChange, value } }) => <TextField value={value} onChange={onChange} variant='outlined' className={classes.textField} placeholder='birthYear' helperText={errors?.birthYear?.message} label='birth year' InputLabelProps={{ shrink: true, }} />}
+                                name="birthYear"
+                                control={control}
+                                defaultValue=''
+                            />
+                            <Button fullWidth color='secondary' type='submit' variant='contained'>Save</Button>
+                        </form>
+                    </>
+                </FormContainer>
+            </Modal>
+
             <Grid container direction="row"
                 justify="space-evenly"
                 alignItems="center" >
@@ -139,10 +165,10 @@ const Home = () => {
                             <Link to={`/${value._id}`} style={{ textDecoration: 'none' }}>
                                 <CardActionArea>
                                     <CardContent>
-                                        <Typography variant="h5">
+                                        <Typography variant="h5" color='textPrimary'>
                                             {value.firstName} {value.lastName}
                                         </Typography>
-                                        <Typography variant="body1">
+                                        <Typography variant="body1" color='textSecondary'>
                                             {value.email}
                                         </Typography>
                                     </CardContent>

@@ -31,13 +31,13 @@ const schema = yup.object().shape({
 
 const ResetPassword = () => {
     const classes = useStyles()
-    const user = JSON.parse(localStorage.getItem('user'))
+    const { user } = JSON.parse(localStorage.getItem('user'))
     const [authError, setAuthError] = useState('')
     const [open, setOpen] = useState(false)
+    const [success, setSuccess] = useState(false)
     const { handleSubmit, control, reset, formState: { errors } } = useForm({
         resolver: yupResolver(schema)
     });
-
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -48,8 +48,9 @@ const ResetPassword = () => {
     const onSubmit = async data => {
         delete data.confirmNewPassword
         try {
-            await resetPassword(user._id, data)
+            let res = await resetPassword(user._id, data)
             reset(data)
+            setSuccess(true)
         } catch (error) {
             setOpen(true)
             setAuthError('Oops! Somthing went wrong. Please check your credentials and try again.')
@@ -89,6 +90,11 @@ const ResetPassword = () => {
                 <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                     <MuiAlert onClose={handleClose} severity="error" elevation={6} variant="filled" >
                         {authError}
+                    </MuiAlert>
+                </Snackbar>
+                <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
+                    <MuiAlert onClose={() => setSuccess(false)} severity="success" elevation={6} variant="filled" >
+                        "Password updated successfully!"
                     </MuiAlert>
                 </Snackbar>
             </FormContainer></>
